@@ -23,11 +23,19 @@
     };
   in {
     devShells.${system}.default = pkgs.mkShell {
-      packages = [];
+      packages = [
+        pkgs.awscli
+        pkgs.terraform
+        pkgs.localstack
+
+        awscli-local
+        awscdk-local
+        terraform-local
+      ];
     };
 
-    inherit awscli-local awscdk-local terraform-local;
+    inherit localstack-nix;
 
-    packages."x86_64-linux".localstack-nix = localstack-nix;
+    packages."x86_64-linux".default = localstack-nix;
   };
 }
