@@ -19,22 +19,22 @@
 
     localstack-nix = pkgs.buildEnv {
       name = "localstack-nix";
-      paths = [awscli-local awscdk-local terraform-local];
-    };
-  in {
-    devShells.${system}.default = pkgs.mkShell {
-      packages = [
-        pkgs.awscli
-        pkgs.terraform
-        pkgs.localstack
-
+      paths = [
         awscli-local
         awscdk-local
         terraform-local
+        pkgs.awscli
+        pkgs.terraform
+        pkgs.localstack
       ];
     };
-
-    inherit localstack-nix;
+  in {
+    # inherit localstack-nix;
+    devShells.${system}.default = pkgs.mkShell {
+      packages = [
+        localstack-nix
+      ];
+    };
 
     packages."x86_64-linux".default = localstack-nix;
   };
