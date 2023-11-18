@@ -29,7 +29,7 @@
       ];
     };
   in {
-    # inherit localstack-nix;
+    inherit localstack-nix;
     devShells.${system}.default = pkgs.mkShell {
       packages = [
         localstack-nix
