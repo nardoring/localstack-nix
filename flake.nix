@@ -11,21 +11,30 @@
     pkgs = import nixpkgs {
       inherit system;
       config.allowUnfree = true;
+      overlays = [
+        (final: prev: {
+          python3 = prev.python311;
+          python3Packages = prev.python311Packages;
+        })
+      ];
     };
 
-    awscli-local = pkgs.callPackage ./awscli {};
+
+    localstack = pkgs.python3Packages.callPackage ./localstack {};
+    awscli-local = pkgs.python3Packages.callPackage ./awscli {};
+    terraform-local = pkgs.python3Packages.callPackage ./terraform {};
     awscdk-local = pkgs.callPackage ./awscdk {};
-    terraform-local = pkgs.callPackage ./terraform {};
 
     localstack-nix = pkgs.buildEnv {
       name = "localstack-nix";
       paths = [
+        localstack
         awscli-local
-        awscdk-local
         terraform-local
+        awscdk-local
+
         pkgs.awscli
         pkgs.terraform
-        pkgs.localstack
       ];
     };
   in {

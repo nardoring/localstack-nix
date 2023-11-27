@@ -1,20 +1,23 @@
 {
-  python310Packages,
+  buildPythonApplication,
   awscli,
   substituteAll,
+  urllib3,
+  localstack-client,
+  fetchPypi,
 }:
-python310Packages.buildPythonApplication rec {
+buildPythonApplication rec {
   pname = "awscli-local";
   version = "0.21";
 
-  src = python310Packages.fetchPypi {
+  src = fetchPypi {
     inherit pname version;
     hash = "sha256-marWuODP77IJNFOGbLzSTnENfmoVI8rAlp7Q9kRC6nw=";
   };
 
   doCheck = true;
 
-  nativeBuildInputs = with python310Packages; [
+  nativeBuildInputs = [
     urllib3
     localstack-client
   ];
