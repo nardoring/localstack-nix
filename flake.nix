@@ -19,8 +19,6 @@
       ];
     };
 
-
-    localstack = pkgs.python3Packages.callPackage ./localstack {};
     awscli-local = pkgs.python3Packages.callPackage ./awscli {};
     terraform-local = pkgs.python3Packages.callPackage ./terraform {};
     awscdk-local = pkgs.callPackage ./awscdk {};
@@ -28,12 +26,12 @@
     localstack-nix = pkgs.buildEnv {
       name = "localstack-nix";
       paths = [
-        localstack
         awscli-local
-        terraform-local
         awscdk-local
+        terraform-local
 
         pkgs.awscli
+        pkgs.localstack
         pkgs.terraform
       ];
     };
@@ -46,5 +44,6 @@
     };
 
     packages."x86_64-linux".default = localstack-nix;
+    formatter.${system} = pkgs.alejandra;
   };
 }
