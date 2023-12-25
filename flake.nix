@@ -26,21 +26,31 @@
         py3 = pkgs.python311;
         py3Packages = pkgs.python311Packages;
 
+
+        awscdk-local = pkgs.callPackage ./awscdk {};
+        awscli-local = py3Packages.callPackage ./awscli {};
+        terraform-local = py3Packages.callPackage ./terraform {};
+
         pyEnv =
           py3.withPackages (ps:
-            with py3Packages; []);
+            with py3Packages; [
+              awscdk-local
+              awscli-local
+              terraform-local
+            ]);
       in {
         devShells.default = pkgs.mkShell {
           name = "Python dev env";
-          buildInputs = with pkgs; [
+          buildInputs = [
             pyEnv
           ];
         };
 
         packages = {
-          awscdk-local = pkgs.callPackage ./awscdk {};
-          awscli-local = py3Packages.callPackage ./awscli {};
-          terraform-local = py3Packages.callPackage ./terraform {};
+          default = awscli-local;
+
+          awscdk-local = awscdk-local;
+          terraform-local = terraform-local;
         };
       };
     });
