@@ -1,49 +1,47 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    flake-parts.url = "github:hercules-ci/flake-parts";
   };
 
-  outputs = {
+  outputs = inputs @ {
     self,
     nixpkgs,
-  }: let
-    system = "x86_64-linux";
-    pkgs = import nixpkgs {
-      inherit system;
-      config.allowUnfree = true;
-      overlays = [
-        (final: prev: {
-          python3 = prev.python311;
-          python3Packages = prev.python311Packages;
-        })
-      ];
-    };
+    flake-parts,
+    ...
+  }:
+    flake-parts.lib.mkFlake {inherit self inputs;} ({withSystem, ...}: {
+      systems = ["x86_64-linux"];
 
-    awscli-local = pkgs.python3Packages.callPackage ./awscli {};
-    terraform-local = pkgs.python3Packages.callPackage ./terraform {};
-    awscdk-local = pkgs.callPackage ./awscdk {};
+      perSystem = {
+        pkgs,
+        system,
+        ...
+      }: let
+        pkgs = import inputs.nixpkgs {
+          inherit system;
+          config.allowUnfree = true;
+        };
 
-    localstack-nix = pkgs.buildEnv {
-      name = "localstack-nix";
-      paths = [
-        awscli-local
-        awscdk-local
-        terraform-local
+        py3 = pkgs.python311;
+        py3Packages = pkgs.python311Packages;
 
-        pkgs.awscli
-        pkgs.localstack
-        pkgs.terraform
-      ];
-    };
-  in {
-    inherit localstack-nix;
-    devShells.${system}.default = pkgs.mkShell {
-      packages = [
-        localstack-nix
-      ];
-    };
+        pyEnv =
+          py3.withPackages (ps:
+            with py3Packages; []);
+      in {
+        devShells.default = pkgs.mkShell {
+          name = "Python dev env";
+          buildInputs = with pkgs; [
+            pyEnv
+          ];
+        };
 
-    packages."x86_64-linux".default = localstack-nix;
-    formatter.${system} = pkgs.alejandra;
-  };
+        packages = {
+          awscdk-local = pkgs.callPackage ./awscdk {};
+          awscli-local = py3Packages.callPackage ./awscli {};
+          terraform-local = py3Packages.callPackage ./terraform {};
+        };
+      };
+    });
 }
