@@ -37,12 +37,14 @@
               awscdk-local
               awscli-local
               terraform-local
+              cryptography
             ]);
       in {
         devShells.default = pkgs.mkShell {
           name = "Python dev env";
           buildInputs = [
             pyEnv
+            pkgs.localstack
           ];
         };
 
