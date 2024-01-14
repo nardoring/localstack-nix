@@ -26,10 +26,10 @@
         py3 = pkgs.python311;
         py3Packages = pkgs.python311Packages;
 
-
         awscdk-local = pkgs.callPackage ./awscdk {};
         awscli-local = py3Packages.callPackage ./awscli {};
         terraform-local = py3Packages.callPackage ./terraform {};
+        localstack = py3Packages.callPackage ./localstack {};
 
         pyEnv =
           py3.withPackages (ps:
@@ -37,20 +37,21 @@
               awscdk-local
               awscli-local
               terraform-local
-              cryptography
+              localstack
             ]);
       in {
         devShells.default = pkgs.mkShell {
           name = "Python dev env";
           buildInputs = [
             pyEnv
-            pkgs.localstack
+            # pkgs.localstack # use the version we build here, nixpkg broken
           ];
         };
 
         packages = {
-          default = awscli-local;
-
+          default = localstack;
+          localstack = localstack;
+          awscli-local = awscli-local;
           awscdk-local = awscdk-local;
           terraform-local = terraform-local;
         };
