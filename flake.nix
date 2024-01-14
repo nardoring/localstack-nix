@@ -28,18 +28,17 @@
         awscdk-local = pkgs.callPackage ./awscdk {};
         awscli-local = py3Packages.callPackage ./awscli {};
         terraform-local = py3Packages.callPackage ./terraform {};
+        localstack-ext = py3Packages.callPackage ./localstack-ext {inherit localstack;};
         localstack = py3Packages.callPackage ./localstack {};
-        localstack-ext = py3Packages.callPackage ./localstack-ext {};
 
-        pyEnv =
-          py3.withPackages (ps:
-            with py3Packages; [
-              awscdk-local
-              awscli-local
-              terraform-local
-              localstack
-              localstack-ext
-            ]);
+        pyEnv = py3.withPackages (ps:
+          with py3Packages; [
+            awscdk-local
+            awscli-local
+            terraform-local
+            localstack
+            localstack-ext
+          ]);
       in {
         devShells.default = pkgs.mkShell {
           name = "Python dev env";

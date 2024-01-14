@@ -60,6 +60,7 @@ buildPythonPackage rec {
   ];
 
   propagatedBuildInputs = [
+    localstack
     cachetools
     click
     cryptography
@@ -94,6 +95,5 @@ buildPythonPackage rec {
     description = "Extensions for LocalStack";
     homepage = "https://github.com/localstack/localstack";
     license = licenses.asl20;
-    maintainers = with maintainers; [ jonringer ];
   };
 }
