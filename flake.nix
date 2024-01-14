@@ -6,7 +6,7 @@
 
   outputs = inputs @ {
     self,
-    nixpkgs,
+    # nixpkgs,
     flake-parts,
     ...
   }:
