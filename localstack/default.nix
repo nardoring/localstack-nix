@@ -13,7 +13,7 @@
   dnslib,
   dnspython,
   localstack-client,
-  # localstack-ext,
+  localstack-ext,
   plux,
   psutil,
   python-dotenv,
@@ -62,7 +62,7 @@ buildPythonPackage rec {
     dnslib
     dnspython
     localstack-client
-    # localstack-ext
+    localstack-ext
     plux
     psutil
     python-dotenv

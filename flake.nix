@@ -6,7 +6,6 @@
 
   outputs = inputs @ {
     self,
-    # nixpkgs,
     flake-parts,
     ...
   }:
@@ -30,6 +29,7 @@
         awscli-local = py3Packages.callPackage ./awscli {};
         terraform-local = py3Packages.callPackage ./terraform {};
         localstack = py3Packages.callPackage ./localstack {};
+        localstack-ext = py3Packages.callPackage ./localstack-ext {};
 
         pyEnv =
           py3.withPackages (ps:
@@ -38,6 +38,7 @@
               awscli-local
               terraform-local
               localstack
+              localstack-ext
             ]);
       in {
         devShells.default = pkgs.mkShell {
@@ -50,7 +51,7 @@
 
         packages = {
           default = localstack;
-          localstack = localstack;
+          localstack-ext = localstack-ext;
           awscli-local = awscli-local;
           awscdk-local = awscdk-local;
           terraform-local = terraform-local;
