@@ -22,7 +22,6 @@
           config.allowUnfree = true;
         };
 
-        py3 = pkgs.python311;
         py3Packages = pkgs.python311Packages;
 
         awscdk-local = pkgs.callPackage ./awscdk {};
@@ -30,20 +29,15 @@
         terraform-local = py3Packages.callPackage ./terraform {};
         localstack-ext = py3Packages.callPackage ./localstack-ext {inherit localstack;};
         localstack = py3Packages.callPackage ./localstack {};
-
-        pyEnv = py3.withPackages (ps:
-          with py3Packages; [
+      in {
+        devShells.default = pkgs.mkShell {
+          name = "Python dev env";
+          buildInputs = [
             awscdk-local
             awscli-local
             terraform-local
             localstack
             localstack-ext
-          ]);
-      in {
-        devShells.default = pkgs.mkShell {
-          name = "Python dev env";
-          buildInputs = [
-            pyEnv
             # pkgs.localstack # use the version we build here, nixpkg broken
           ];
         };
