@@ -1,0 +1,56 @@
+#+TITLE: LocalStack-Nix
+
+  This repository contains Nix expressions for building and managing a local AWS cloud stack using LocalStack. It includes custom packages for =LocalStack=, =awscli v1=, =AWS CDK=, and =Terraform=, tailored for a development environment on ~x86_64-linux~ systems.
+
+
+** Development Environment
+  The Nix flake in this repository sets up a development environment with all the necessary dependencies for LocalStack and related tooling. This environment is defined under the ~devShells~ attribute in the flake.
+
+
+** Packages
+  The repository contains the following custom Nix packages, each specifically tailored for local development and testing:
+
+  # - /AWS CDK Local (awscdk-local)/: A local version of AWS Cloud Development Kit (CDK), allowing developers to define cloud infrastructure in code and deploy it through AWS CloudFormation. It is particularly useful for testing and mock deployments on the LocalStack.
+
+  - =AWS CLI Local (awscli-local)=: A wrapper for the AWS Command Line Interface (CLI) designed to interact seamlessly with LocalStack. It simplifies the process of sending commands to the LocalStack's mock AWS services.
+
+  - =Terraform Local (terraform-local)=: This package includes a wrapper of Terraform configured to work with LocalStack, enabling infrastructure as code (IaC) capabilities for local cloud resources management.
+
+  - =LocalStack (localstack)=: The core LocalStack package, providing a local simulation of the AWS cloud stack. It enables developers to test cloud applications locally without incurring the cost and complexity of deploying them in the actual AWS cloud.
+
+  # - /LocalStack Extensions (localstack-ext)/: Additional extensions and utilities for LocalStack, enhancing its functionality and integration capabilities with other development tools.
+
+
+** Usage
+  To effectively utilize the development environment provided by this repository, follow these steps:
+
+  1. /Preparation/:
+     - Ensure you have Nix with flake support installed on your system. This can be done by following the instructions on the official Nix website
+     - Clone this repository to your local machine using a Git client
+
+  2. /Entering the Development Environment/:
+     - Navigate to the cloned repository's root directory in your terminal
+     - Enter the development environment by running ~nix develop~. This command will set up the environment as defined in the Nix flake, installing all necessary dependencies and tools
+
+  3. /Working with the Environment/:
+     - Once inside the development environment, you can start using the packages for local cloud development
+     - To deploy and test your AWS infrastructure code locally, use the provided =awscli-local=, or =terraform-local= commands, which are configured to work with LocalStack
+
+
+*** Continuous Integration
+  The repository uses GitHub Actions for continuous integration to automatically build and test the LocalStack on Nix. The CI pipeline is triggered on pull requests to the main branch, excluding changes to documentation files. It can also be manually triggered. The workflow is defined as follows:
+
+  - /Workflow Name/: Build Localstack on Nix
+  - /Trigger/: On pull requests to the main branch, excluding README, markdown, and org files. Also, it can be triggered manually via workflow_dispatch
+  - /Environment/: The CI pipeline runs on Ubuntu 22.04
+  - /Steps/:
+    + Check out the repository using the actions/checkout@v3 GitHub Action
+    + Install Nix using the DeterminateSystems/nix-installer-action
+    + Set up Nix cache using the DeterminateSystems/magic-nix-cache-action
+    + Build the project using `nix build`
+
+  This CI setup ensures that each change is automatically built and tested, maintaining the integrity and reliability of the codebase.
+
+** Notes
+  - This environment is specifically designed for local development and testing. It is not intended for production deployments
+  - For the latest updates and more detailed documentation, refer to the individual package repositories and the LocalStack official documentation
