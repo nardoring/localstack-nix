@@ -10,11 +10,12 @@
 }:
 buildPythonApplication rec {
   pname = "awscli-local";
-  version = "0.21";
+  version = "0.22.0";
 
   src = fetchPypi {
     inherit pname version;
-    hash = "sha256-marWuODP77IJNFOGbLzSTnENfmoVI8rAlp7Q9kRC6nw=";
+    # hash = "sha256-marWuODP77IJNFOGbLzSTnENfmoVI8rAlp7Q9kRC6nw="; # 0.21
+    hash = "sha256-OAfPLuS73U3038i+8CfyW95SPcr4EZcg9nftleu6ZqQ="; # 0.22.0
   };
 
   nativeBuildInputs = [
