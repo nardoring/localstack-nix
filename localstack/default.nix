@@ -15,31 +15,35 @@
   localstack-client,
   plux,
   psutil,
+  pyaes,
+  python-dateutil,
   python-dotenv,
+  python-jose,
   pyyaml,
   packaging,
   requests,
   rich,
   semver,
+  tabulate,
   tailer,
 }:
 buildPythonPackage rec {
   pname = "localstack";
-  version = "3.0.2";
+  version = "3.1.0";
   pyproject = true;
 
   src = fetchFromGitHub {
     owner = "localstack";
     repo = "localstack";
     rev = "refs/tags/v${version}";
-    hash = "sha256-HncD/lhYfBrqtXF8F1Gz7JqwrASoHbsXvp1HXM5rldw=";
+    # hash = "sha256-r0KRPtsLr6Pyn/va93reLdHHKtiOLB1uflAJ2L/uZmU="; # 3.0.2
+    # hash = "sha256-r0KRPtsLr6Pyn/va93reLdHHKtiOLB1uflAJ2L/uZmU="; # 3.2.0
+    hash = "sha256-hUq1w0i2ui86qUKviqOkez/G9OXxEmGP1Ipgax4Ko5k="; # 3.1.0
   };
 
   postPatch = ''
     substituteInPlace setup.cfg \
-      --replace "requests>=2.20.0,<2.26" "requests~=2.20" \
-      --replace "cachetools~=5.0.0" "cachetools~=5.0" \
-      --replace "boto3>=1.20,<1.25.0" "boto3~=1.20"
+      --replace-warn "plux>=1.7" "plux~=1.50"
   '';
 
   nativeBuildInputs = [
@@ -48,7 +52,9 @@ buildPythonPackage rec {
   ];
 
   pythonRelaxDeps = [
+    "cryptography"
     "dill"
+    "plux"
   ];
 
   propagatedBuildInputs = [
@@ -63,12 +69,16 @@ buildPythonPackage rec {
     localstack-client
     plux
     psutil
+    pyaes
+    python-dateutil
     python-dotenv
+    python-jose
     pyyaml
     packaging
     requests
     rich
     semver
+    tabulate
     tailer
   ];
 
