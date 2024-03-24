@@ -26,24 +26,26 @@
 
         awscdk-local = pkgs.callPackage ./awscdk {};
         awscli-local = py3Packages.callPackage ./awscli {};
-        terraform-local = py3Packages.callPackage ./terraform {};
+        terraform-local = py3Packages.callPackage ./terraform {inherit localstack-client;};
         localstack-ext = py3Packages.callPackage ./localstack-ext {inherit localstack;};
-        localstack = py3Packages.callPackage ./localstack {};
+        localstack-client = py3Packages.callPackage ./localstack-client {inherit localstack;};
+        localstack = py3Packages.callPackage ./localstack {inherit localstack-client;};
       in {
         devShells.default = pkgs.mkShell {
           name = "Python dev env";
-          buildInputs = [
+          packages = [
             awscdk-local
             awscli-local
             terraform-local
             localstack
-            localstack-ext
+            localstack-client
             # pkgs.localstack # use the version we build here, nixpkg broken
           ];
         };
 
         packages = {
           default = localstack;
+          localstack-client = localstack-client;
           localstack-ext = localstack-ext;
           awscli-local = awscli-local;
           awscdk-local = awscdk-local;
