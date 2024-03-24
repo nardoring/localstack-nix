@@ -32,12 +32,13 @@
 
 buildPythonPackage rec {
   pname = "localstack-ext";
-  version = "3.0.2";
+  version = "3.1.0";
   pyproject = true;
 
   src = fetchPypi {
     inherit pname version;
-    hash = "sha256-KNM/HjSWVwenLqtXbaRP70k7b7YXk//aKGEkBxPp1fA=";
+    # hash = "sha256-53pbt7kNaYQRsLb+OI8gLwR3cBE18ZKLZmG4aP1/93E="; # 3.2.0
+    hash = "sha256-FE9G8rT7xuDy8RIYS0xs4880CrXf342DW5aQ/3srZqI="; # 3.1.0
   };
 
   postPatch = ''
@@ -48,19 +49,21 @@ buildPythonPackage rec {
     substituteInPlace setup.cfg \
       --replace "version = attr: localstack_ext.__version__" "version = ${version}"
     cat setup.cfg
-
-    substituteInPlace setup.cfg \
-      --replace "dill==0.3.2" "dill~=0.3.0" \
-      --replace "requests>=2.20.0,<2.26" "requests~=2.20"
   '';
 
   nativeBuildInputs = [
     plux
     setuptools
+    tabulate
+  ];
+
+  pythonRelaxDeps = [
+    # "cryptography" # 3.2.0
+    # "dill"
+    "plux"
   ];
 
   propagatedBuildInputs = [
-    localstack
     cachetools
     click
     cryptography
@@ -78,8 +81,8 @@ buildPythonPackage rec {
     requests
     semver
     stevedore
-    tabulate
     tailer
+    localstack
   ];
 
   pythonImportsCheck = [ "localstack_ext" ];
@@ -95,5 +98,6 @@ buildPythonPackage rec {
     description = "Extensions for LocalStack";
     homepage = "https://github.com/localstack/localstack";
     license = licenses.asl20;
+    maintainers = with maintainers; [ jonringer ];
   };
 }
