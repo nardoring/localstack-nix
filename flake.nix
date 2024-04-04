@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
   };
 
@@ -9,37 +9,46 @@
     flake-parts,
     ...
   }:
-    flake-parts.lib.mkFlake {inherit self inputs;} ({withSystem, ...}: {
+    flake-parts.lib.mkFlake {inherit self inputs;} ({...}: {
       systems = ["x86_64-linux"];
 
-      perSystem = {
-        pkgs,
-        system,
-        ...
-      }: let
+      perSystem = {system, ...}: let
         pkgs = import inputs.nixpkgs {
           inherit system;
           config.allowUnfree = true;
         };
 
-        py3Packages = pkgs.python311Packages;
+        py3Packages = pkgs.python311Packages.override {
+          overrides = self: super: {
+            wordcloud = super.wordcloud.overridePythonAttrs (oldAttrs: {
+              version = "1.9.1.1";
+              doCheck = false;
+              pythonImportsCheck = [];
+            });
+          };
+        };
 
         awscdk-local = pkgs.callPackage ./awscdk {};
         awscli-local = py3Packages.callPackage ./awscli {};
-        terraform-local = py3Packages.callPackage ./terraform {inherit localstack-client;};
+
         localstack-ext = py3Packages.callPackage ./localstack-ext {inherit localstack;};
         localstack-client = py3Packages.callPackage ./localstack-client {inherit localstack;};
         localstack = py3Packages.callPackage ./localstack {inherit localstack-client;};
+
+        terraform-local = py3Packages.callPackage ./terraform {inherit localstack-client;};
+
+        visions = py3Packages.callPackage ./visions {};
+        ydata-profiling = py3Packages.callPackage ./ydata-profiling {inherit visions;};
+
+        pyEnv = pkgs.python311.withPackages (ps: [localstack-client localstack-ext ydata-profiling]);
       in {
         devShells.default = pkgs.mkShell {
-          name = "Python dev env";
+          name = "dev env";
           packages = [
             awscdk-local
             awscli-local
-            terraform-local
             localstack
-            localstack-client
-            # pkgs.localstack # use the version we build here, nixpkg broken
+            pyEnv
           ];
         };
 
@@ -50,6 +59,7 @@
           awscli-local = awscli-local;
           awscdk-local = awscdk-local;
           terraform-local = terraform-local;
+          ydata-profiling = ydata-profiling;
         };
       };
     });

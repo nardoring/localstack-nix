@@ -43,7 +43,7 @@ buildPythonPackage rec {
 
   postPatch = ''
     substituteInPlace setup.cfg \
-      --replace-warn "plux>=1.7" "plux~=1.50"
+      --replace "plux>=1.7" "plux~=1.50"
   '';
 
   nativeBuildInputs = [
