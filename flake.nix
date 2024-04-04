@@ -21,9 +21,17 @@
         py3Packages = pkgs.python311Packages.override {
           overrides = self: super: {
             wordcloud = super.wordcloud.overridePythonAttrs (oldAttrs: {
-              version = "1.9.1.1";
+              version = "1.9.0";
               doCheck = false;
               pythonImportsCheck = [];
+              disabledTests = [
+                # Don't tests CLI
+                "test_cli_as_executable"
+                # OSError: invalid ppem value
+                "test_recolor_too_small"
+                "test_recolor_too_small_set_default"
+                "test_coloring_black_works"
+              ];
             });
           };
         };
