@@ -18,23 +18,7 @@
           config.allowUnfree = true;
         };
 
-        py3Packages = pkgs.python311Packages.override {
-          overrides = self: super: {
-            wordcloud = super.wordcloud.overridePythonAttrs (oldAttrs: {
-              version = "1.9.0";
-              doCheck = false;
-              pythonImportsCheck = [];
-              disabledTests = [
-                # Don't tests CLI
-                "test_cli_as_executable"
-                # OSError: invalid ppem value
-                "test_recolor_too_small"
-                "test_recolor_too_small_set_default"
-                "test_coloring_black_works"
-              ];
-            });
-          };
-        };
+        py3Packages = pkgs.python311Packages;
 
         awscdk-local = pkgs.callPackage ./awscdk {};
         awscli-local = py3Packages.callPackage ./awscli {};
@@ -45,8 +29,9 @@
 
         terraform-local = py3Packages.callPackage ./terraform {inherit localstack-client;};
 
+        wordcloud = py3Packages.callPackage ./wordcloud {};
         visions = py3Packages.callPackage ./visions {};
-        ydata-profiling = py3Packages.callPackage ./ydata-profiling {inherit visions;};
+        ydata-profiling = py3Packages.callPackage ./ydata-profiling {inherit wordcloud visions;};
 
         pyEnv = pkgs.python311.withPackages (ps: [localstack-client localstack-ext ydata-profiling]);
       in {
